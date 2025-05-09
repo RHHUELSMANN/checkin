@@ -25,9 +25,16 @@ st.title("🧾 Check-in- und Visumrechner")
 st.header("✈️ Check-in-Rechner für Flugreisen")
 
 airline_code = st.text_input("✈ Airline-Kürzel (z. B. LH, X3, DE)", max_chars=5).upper().strip()
-frist_vorgabe = checkin_fristen.get(airline_code, {}).get("stunden", 24)
-hinweis = checkin_fristen.get(airline_code, {}).get("hinweis")
+
+if airline_code in checkin_fristen:
+    frist_vorgabe = checkin_fristen[airline_code]["stunden"]
+    st.success(f"{checkin_fristen[airline_code]['name']} – Check-in-Frist: {frist_vorgabe} h")
+else:
+    st.warning("✈ Airline nicht erkannt – bitte Check-in-Frist manuell eingeben.")
+    frist_vorgabe = 72
+
 stunden_input = st.number_input("🕓 Check-in-Frist in Stunden", min_value=1, max_value=336, value=frist_vorgabe)
+
 abflugort = st.text_input("📍 Abflugort (Stadt oder Land)", placeholder="z. B. San José, Costa Rica").strip()
 datum_checkin_str = st.text_input("📅 Abflugdatum und Uhrzeit (z. B. 2405 1925)", placeholder="TTMM HHMM").strip()
 
@@ -56,8 +63,8 @@ if st.button("🧮 Check-in-Zeit berechnen"):
                     st.success("✅ Ergebnis:")
                     st.markdown(f"**Abflugzeit (lokal):** {abflug_dt_local.strftime('%d.%m.%Y %H:%M')} ({tz_name})")
                     st.markdown(f"**Check-in frühestens ab:** {checkin_dt_de.strftime('%d.%m.%Y %H:%M')} 🇩🇪 (deutsche Zeit)")
-                    if hinweis:
-                        st.info(f"ℹ️ Hinweis zur Airline: {hinweis}")
+                    if airline_code in checkin_fristen and "hinweis" in checkin_fristen[airline_code]:
+                        st.info(f"ℹ️ Hinweis zur Airline: {checkin_fristen[airline_code]['hinweis']}")
         except ValueError:
             st.error("Ungültiges Datumsformat. Bitte TTMM HHMM eingeben.")
 
