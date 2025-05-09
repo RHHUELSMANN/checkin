@@ -74,7 +74,11 @@ def parse_geburtsdatum(text):
         return str(alter)
     except:
         return "-"
-st.success(f"Alter: {parse_geburtsdatum(geburtsdatum_str)} Jahre") if parse_geburtsdatum(geburtsdatum_str) != "-" else st.warning("Bitte TTMMJJJJ eingeben")
+alter = parse_geburtsdatum(geburtsdatum_str)
+if alter != "-":
+    st.success(f"Alter: {alter} Jahre")
+elif geburtsdatum_str:
+    st.warning("Bitte TTMMJJJJ eingeben")
 
 # Abschnitt 3: Visum-Gültigkeit
 st.header("🛂 Visum-Gültigkeit")
@@ -100,4 +104,3 @@ try:
 except:
     if datum1_str and datum2_str:
         st.error("Bitte beide Daten korrekt im Format TTMMJJJJ eingeben.")
-
