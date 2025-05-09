@@ -34,14 +34,20 @@ st.title("🧾 Check-in- und Visumrechner")
 # Abschnitt 1: Check-in-Zeitrechner
 st.header("🛫 Check-in-Rechner für Flugreisen")
 airline_code = st.text_input("✈ Airline-Kürzel (z. B. LH, X3, DE)", max_chars=5).upper().strip()
+
+frist_vorgabe = None
+if airline_code in checkin_fristen:
+    frist_vorgabe = checkin_fristen[airline_code]["stunden"]
+    st.info(f"Automatisch erkannt: {checkin_fristen[airline_code]['name']} – Check-in-Frist: {frist_vorgabe} h")
+
+stunden_input = st.number_input("🕓 Check-in-Frist (in Stunden)", min_value=1, max_value=336, value=frist_vorgabe or 24)
+
 abflugort = st.text_input("📍 Abflugort (Stadt oder Land)", placeholder="z. B. San José, Costa Rica").strip()
 datum_checkin_str = st.text_input("📅 Abflugdatum und Uhrzeit (z. B. 2405 1925)", placeholder="TTMM HHMM").strip()
 
 if st.button("🧮 Check-in-Zeit berechnen"):
     if not airline_code or not abflugort or not datum_checkin_str:
         st.error("Bitte alle Felder ausfüllen.")
-    elif airline_code not in checkin_fristen:
-        st.error(f"Airline-Kürzel '{airline_code}' ist nicht in der Positivliste hinterlegt.")
     else:
         try:
             year = datetime.now().year
@@ -58,16 +64,15 @@ if st.button("🧮 Check-in-Zeit berechnen"):
                 else:
                     tz_local = pytz.timezone(tz_name)
                     abflug_dt_local = tz_local.localize(abflug_dt)
-                    frist_stunden = checkin_fristen[airline_code]["stunden"]
-                    checkin_dt_local = abflug_dt_local - timedelta(hours=frist_stunden)
+                    checkin_dt_local = abflug_dt_local - timedelta(hours=stunden_input)
                     tz_de = pytz.timezone("Europe/Berlin")
                     checkin_dt_de = checkin_dt_local.astimezone(tz_de)
 
                     st.success("✅ Ergebnis:")
                     st.markdown(f"**Abflugzeit (lokal):** {abflug_dt_local.strftime('%d.%m.%Y %H:%M')} ({tz_name})")
-                    st.markdown(f"**Check-in frühestens ab:** {checkin_dt_de.strftime('%d.%m.%Y %H:%M')} 🇩🇪 (deutscher Zeit)")
+                    st.markdown(f"**Check-in frühestens ab:** {checkin_dt_de.strftime('%d.%m.%Y %H:%M')} 🇩🇪 (deutsche Zeit)")
 
-                    hinweis = checkin_fristen[airline_code].get("hinweis")
+                    hinweis = checkin_fristen.get(airline_code, {}).get("hinweis")
                     if hinweis:
                         st.info(f"ℹ️ Hinweis zur Airline: {hinweis}")
         except ValueError:
