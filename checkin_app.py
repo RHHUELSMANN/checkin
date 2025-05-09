@@ -17,6 +17,17 @@ checkin_fristen = {
     "XQ": {"name": "SunExpress", "stunden": 72, "hinweis": "Check-in evtl. kostenpflichtig, Reisepass erforderlich"},
 }
 
+# Funktion zur flexiblen Datumserkennung
+def parse_datum(eingabe: str) -> date:
+    eingabe = eingabe.strip().replace('.', '').replace(' ', '')
+    formate = ["%d%m%y", "%d%m%Y", "%d.%m.%Y", "%d.%m.%y"]
+    for fmt in formate:
+        try:
+            return datetime.strptime(eingabe, fmt).date()
+        except ValueError:
+            continue
+    raise ValueError(f"❌ Ungültiges Datumsformat: {eingabe}")
+
 st.set_page_config(page_title="Check-in & Visumrechner", page_icon="🧾")
 st.title("🧾 Check-in- und Visumrechner")
 
@@ -64,34 +75,34 @@ if st.button("🧮 Check-in-Zeit berechnen"):
 
 # Abschnitt 2: Altersberechnung
 st.header("🧓 Altersberechnung")
-geburtsdatum_str = st.text_input("Geburtsdatum (TT.MM.JJJJ)", "17.08.1959")
+geburtsdatum_str = st.text_input("Geburtsdatum (TT.MM.JJJJ oder 060525)", "17.08.1959")
 try:
-    geburtsdatum = datetime.strptime(geburtsdatum_str, "%d.%m.%Y").date()
+    geburtsdatum = parse_datum(geburtsdatum_str)
     heute = date.today()
     alter = heute.year - geburtsdatum.year - ((heute.month, heute.day) < (geburtsdatum.month, geburtsdatum.day))
     st.success(f"Alter: {alter} Jahre")
-except ValueError:
-    st.error("Ungültiges Format. Bitte TT.MM.JJJJ verwenden.")
+except ValueError as e:
+    st.error(str(e))
 
 # Abschnitt 3: Visumgültigkeit
 st.header("🛂 Visum-Gültigkeit")
-visum_start_str = st.text_input("Visum-Ausstellungsdatum (TT.MM.JJJJ)", "10.04.2025")
+visum_start_str = st.text_input("Visum-Ausstellungsdatum (z. B. 100425)", "10.04.2025")
 visum_tage = st.number_input("Gültigkeit in Tagen", min_value=1, max_value=365, value=35)
 try:
-    visum_start = datetime.strptime(visum_start_str, "%d.%m.%Y").date()
+    visum_start = parse_datum(visum_start_str)
     visum_ablauf = visum_start + timedelta(days=visum_tage)
     st.success(f"Ablaufdatum: {visum_ablauf.strftime('%d.%m.%Y')}")
-except ValueError:
-    st.error("Bitte gültiges Startdatum im Format TT.MM.JJJJ eingeben.")
+except ValueError as e:
+    st.error(str(e))
 
 # Abschnitt 4: Datumsdifferenz
 st.header("📊 Datumsdifferenz in Tagen")
-datum1_str = st.text_input("Erstes Datum (TT.MM.JJJJ)", "01.12.2024")
-datum2_str = st.text_input("Zweites Datum (TT.MM.JJJJ)", "12.03.2025")
+datum1_str = st.text_input("Erstes Datum (z. B. 011224)", "01.12.2024")
+datum2_str = st.text_input("Zweites Datum (z. B. 120325)", "12.03.2025")
 try:
-    datum1 = datetime.strptime(datum1_str, "%d.%m.%Y").date()
-    datum2 = datetime.strptime(datum2_str, "%d.%m.%Y").date()
+    datum1 = parse_datum(datum1_str)
+    datum2 = parse_datum(datum2_str)
     diff_tage = abs((datum2 - datum1).days)
     st.success(f"Unterschied: {diff_tage} Tage")
-except ValueError:
-    st.error("Bitte beide Daten im Format TT.MM.JJJJ eingeben.")
+except ValueError as e:
+    st.error(str(e))
