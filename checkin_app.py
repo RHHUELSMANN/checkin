@@ -40,7 +40,7 @@ else:
 
 stunden_input = st.number_input("Check-in-Frist in Stunden", min_value=0, max_value=336, value=frist_vorgabe)
 
-abflugort = st.text_input("Abflugort (Stadt oder Land)", placeholder="z. B. San José, Costa Rica").strip()
+abflugort = st.text_input("Abflugort (Stadt od. Land - kein 3-Letter!)", placeholder="z. B. San José, Costa Rica").strip()
 datum_checkin_str = st.text_input("Abflugdatum und Uhrzeit (z. B. 2405 1925)", placeholder="TTMM HHMM").strip()
 
 if st.button("Check-in-Zeit berechnen"):
