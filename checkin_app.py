@@ -25,7 +25,7 @@ checkin_fristen = {
     "LH": {"name": "Lufthansa", "stunden": 30},
     "SR": {"name": "Sundair", "stunden": 48, "hinweis": "Reisepass erforderlich"},
     "XC": {"name": "Corendon Airlines", "stunden": 72, "hinweis": "Check-in evtl. kostenpflichtig"},
-    "X3": {"name": "TUIfly", "stunden": 336, "hinweis": "Check-in evtl. kostenpflichtig"},
+    "X3": {"name": "TUIfly", "stunden": 48, "hinweis": "Check-in evtl. kostenpflichtig"},
     "XQ": {"name": "SunExpress", "stunden": 72, "hinweis": "Check-in evtl. kostenpflichtig, Reisepass erforderlich"},
 }
 
